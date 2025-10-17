@@ -5,3 +5,6 @@ googleapis-common-protos
 pycryptodome
 protobuf
 Werkzeug
+flask-cors
+httpx
+cachetools
