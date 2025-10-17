@@ -22,9 +22,9 @@ import atexit
 app = Flask(__name__)
 
 # MongoDB configuration
-client = MongoClient(your mongo db url)
-db = client.yourdb
-keys_collection = db.api_keys
+client = MongoClient("mongodb+srv://admin:Royal9382230618ybl@free.nuxx1c6.mongodb.net/?retryWrites=true&w=majority&appName=Free")
+db = client["like_api"]  # You can name it anything, e.g. like_api, freefire_api
+keys_collection = db["royal"]
 
 # Initialize scheduler for daily reset
 scheduler = BackgroundScheduler(daemon=True)
