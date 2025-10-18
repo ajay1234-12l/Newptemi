@@ -66,16 +66,19 @@ scheduler.add_job(
 
 def load_tokens(server_name):
     try:
+        app.logger.info(f"Loading tokens for server: {server_name}")
         if server_name == "IND":
-            with open("token_ind.json", "r") as f:
-                tokens = json.load(f)
+            path = "token_ind.json"
         elif server_name in {"BR", "US", "SAC", "NA"}:
-            with open("token_br.json", "r") as f:
-                tokens = json.load(f)
+            path = "token_br.json"
         else:
-            with open("token_bd.json", "r") as f:
-                tokens = json.load(f)
+            path = "token_bd.json"
+
+        app.logger.info(f"Opening file: {path}")
+        with open(path, "r") as f:
+            tokens = json.load(f)
         return tokens
+
     except Exception as e:
         app.logger.error(f"Error loading tokens for server {server_name}: {e}")
         return None
