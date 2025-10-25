@@ -495,7 +495,7 @@ def handle_requests():
                 player_uid = int(account_info_after.get('UID', 0))
                 player_name = str(account_info_after.get('PlayerNickname', ''))
                 like_given = after_like - before_like
-                player_level = int(account_info_after.get('Level') or account_info_after.get('level') or 0)
+                level = int(account_info_after.get('level') or account_info_after.get('level') or 0)
             except Exception as e:
                 raise Exception(f"Error processing after data: {str(e)}")
             
@@ -519,7 +519,7 @@ def handle_requests():
                     "LikesafterCommand": after_like,
                     "LikesbeforeCommand": before_like,
                     "PlayerNickname": player_name,
-                    "PlayerLevel": player_level,
+                    "level": level,
                     "UID": player_uid
                 },
                 "status": status
