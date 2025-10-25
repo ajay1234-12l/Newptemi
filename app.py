@@ -495,7 +495,7 @@ def handle_requests():
                 player_uid = int(account_info_after.get('UID', 0))
                 player_name = str(account_info_after.get('PlayerNickname', ''))
                 like_given = after_like - before_like
-                player_level = int(account_info_after.get('Level') or account_info_after.get('level') or 0)
+                player_level = int(account_info_after.get('Level') or account_info_after.get('level') or 1)
             except Exception as e:
                 raise Exception(f"Error processing after data: {str(e)}")
             
