@@ -489,49 +489,57 @@ def handle_requests():
             
             try:
                 jsone_after = MessageToJson(after)
-                data_after = json.loads(jsone_after)
-                account_info_after = data_after.get('AccountInfo', {})
-                after_like = int(account_info_after.get('Likes', 0))
-                player_uid = int(account_info_after.get('UID', 0))
-                player_name = str(account_info_after.get('PlayerNickname', ''))
-                like_given = after_like - before_like
-                player_level = int(account_info_after.get('Level') or account_info_after.get('level') or 1)
-            except Exception as e:
-                raise Exception(f"Error processing after data: {str(e)}")
-            
-            # Determine status and update key usage
-            if like_given > 0:
-                status = 1
-                update_key_usage(api_key, 1)  # Always decrement by 1 when likes are given
-            else:
-                status = 2
-            
-            # Get updated key info
-            updated_key_data = authenticate_key(api_key)
-            if not updated_key_data:
-                raise Exception("Failed to retrieve updated key info")
-            
-            response = {
-                "response": {
-                    "KeyExpiresAt": updated_key_data['expires_at'].isoformat(),
-                    "KeyRemainingRequests": f"{updated_key_data['remaining_requests']}/{updated_key_data['total_requests']}",
-                    "LikesGivenByAPI": like_given,
-                    "LikesafterCommand": after_like,
-                    "LikesbeforeCommand": before_like,
-                    "PlayerNickname": player_name,
-                    "Level": player_level,
-                    "UID": player_uid
-                },
-                "status": status
-            }
-            
-            return response
+try:
+    data_after = json.loads(jsone_after)
+    account_info_after = data_after.get('AccountInfo', {})
 
-        result = process_request()
-        return jsonify(result)
-    except Exception as e:
-        app.logger.error(f"Error processing request: {e}")
-        return jsonify({"error": str(e), "status": 0}), 500
+    # Correct keys according to format_response() mapping
+    after_like = int(account_info_after.get('AccountLikes', 0))
+    player_uid = int(account_info_after.get('AccountBPID', 0))  # Use correct key for UID
+    player_name = str(account_info_after.get('AccountName', ''))
+    player_region = str(account_info_after.get('AccountRegion', ''))
+    # Use AccountLevel key; fallback to 0 if missing
+    player_level = int(account_info_after.get('AccountLevel', 0))
+
+    like_given = after_like - before_like
+
+except Exception as e:
+    raise Exception(f"Error processing after data: {str(e)}")
+
+# Determine status and update key usage
+if like_given > 0:
+    status = 1
+    update_key_usage(api_key, 1)  # Always decrement by 1 when likes are given
+else:
+    status = 2
+
+# Get updated key info
+updated_key_data = authenticate_key(api_key)
+if not updated_key_data:
+    raise Exception("Failed to retrieve updated key info")
+
+response = {
+    "response": {
+        "KeyExpiresAt": updated_key_data['expires_at'].isoformat(),
+        "KeyRemainingRequests": f"{updated_key_data['remaining_requests']}/{updated_key_data['total_requests']}",
+        "LikesGivenByAPI": like_given,
+        "LikesafterCommand": after_like,
+        "LikesbeforeCommand": before_like,
+        "PlayerNickname": player_name,
+        "PlayerRegion": player_region,
+        "PlayerLevel": player_level,
+        "UID": player_uid
+    },
+    "status": status
+}
+
+return response
+
+result = process_request()
+return jsonify(result)
+except Exception as e:
+    app.logger.error(f"Error processing request: {e}")
+    return jsonify({"error": str(e), "status": 0}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
