@@ -18,7 +18,8 @@ import secrets
 import string
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-
+from byte import encrypt_api, Encrypt_ID
+from visit_count_pb2 import Info
 app = Flask(__name__)
 
 # MongoDB configuration
@@ -229,7 +230,7 @@ def parse_protobuf_response(response_data):
 
 async def visit(session, url, token, uid, data):
     headers = {
-        "ReleaseVersion": "OB49",
+        "ReleaseVersion": "OB50",
         "X-GA": "v1 1",
         "Authorization": f"Bearer {token}",
         "Host": url.replace("https://", "").split("/")[0]
