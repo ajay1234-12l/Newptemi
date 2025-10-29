@@ -58,8 +58,8 @@ def reset_remaining_requests():
 scheduler.add_job(
     reset_remaining_requests,
     'cron',
-    hour=0,
-    minute=0,
+    hour=4,
+    minute=53,
     second=0,
     timezone='UTC'
 )
