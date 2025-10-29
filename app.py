@@ -478,6 +478,19 @@ def remove_key():
         app.logger.error(f"Error removing API key: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/key/list', methods=['GET'])
+def list_keys():
+    try:
+        keys = list(keys_collection.find({}, {"_id": 0}))
+        for key in keys:
+            for field in ['created_at', 'expires_at', 'last_reset', 'last_used']:
+                if field in key and isinstance(key[field], datetime):
+                    key[field] = key[field].isoformat()
+        return jsonify({"keys": keys}), 200
+    except Exception as e:
+        app.logger.error(f"Error listing keys: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/key/update', methods=['PUT'])
 def update_key():
     """Update an API key's properties"""
