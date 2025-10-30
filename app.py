@@ -424,6 +424,31 @@ def update_key():
         app.logger.error(f"Error updating API key: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/keys", methods=["GET"])
+def list_keys():
+    """Return all active (non-expired) keys"""
+    try:
+        now = datetime.now()
+        # Sirf active aur valid keys lao
+        keys = list(keys_collection.find({
+            "is_active": True,
+            "expires_at": {"$gt": now}
+        }))
+
+        normalized = []
+        for k in keys:
+            normalized.append({
+                "key": k["key"],
+                "total": k.get("total_requests", 0),
+                "remaining": k.get("remaining_requests", 0),
+                "expires_at": k.get("expires_at").isoformat() if isinstance(k.get("expires_at"), datetime) else str(k.get("expires_at")),
+            })
+        
+        return jsonify({"keys": normalized})
+    except Exception as e:
+        app.logger.error(f"Error listing keys: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/like', methods=['GET'])
 def handle_requests():
     api_key = request.headers.get('X-API-KEY') or request.args.get('key')
